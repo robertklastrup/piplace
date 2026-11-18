@@ -4,29 +4,39 @@
 #include <sys/ioctl.h>      // ioctl()
 #include <linux/i2c-dev.h>
 
-int main (){
-    int fd = open("/dev/i2c-1", O_RDWR);
+bool send_command(int fd, unsigned char cmd) {
+    unsigned char buf[] = { 0x00, cmd };
+    ssize_t n = write(fd, buf, 2);
+    return n == 2;
+}
 
-    if(fd == -1){
+int main() {
+    // 1. Åbn I2C-bussen
+    int fd = open("/dev/i2c-1", O_RDWR);
+    if (fd == -1) {
         perror("open");
         return 1;
     }
-    if(ioctl(fd, I2C_SLAVE, 0x3c) < 0){
+
+    // 2. Vælg OLED'en (adresse 0x3c)
+    if (ioctl(fd, I2C_SLAVE, 0x3c) < 0) {
         perror("ioctl");
         close(fd);
         return 1;
     }
+    printf("Forbundet til OLED\n");
 
-    unsigned char kommando[] = { 0x00, 0xAF };
-    ssize_t n = write(fd, kommando, 2);
-
-    if (n != 2) {
-        perror("write");
+    // 3. Tænd skærmen: charge pump til + display on
+    if (!send_command(fd, 0x8D) ||
+        !send_command(fd, 0x14) ||
+        !send_command(fd, 0xAF)) {
+        perror("send_command");
         close(fd);
         return 1;
     }
-    printf("Sendte %zd bytes til OLED\n", n);
+    printf("Skærmen er tændt\n");
 
-    printf("Forbundet til OLED\n");
+    // 4. Ryd op
     close(fd);
+    return 0;
 }
