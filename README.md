@@ -9,6 +9,8 @@ Et 128×64 tegnelærred på nettet, der lyser live op på en OLED-skærm på en 
 #### Step 1: CMake
 Projektet bygges med CMake, CMakeLists.txt. Så kan det bygges på alle maskiner, jeg behøver ikke holde styr på alle filer og flag ved hver compile, og kun de filer, der er ændret, bliver bygget igen.
 
+#### Step 2: 
+
 ## English version
 
 ### Idea
