@@ -17,6 +17,16 @@ int main (){
         return 1;
     }
 
+    unsigned char kommando[] = { 0x00, 0xAF };
+    ssize_t n = write(fd, kommando, 2);
+
+    if (n != 2) {
+        perror("write");
+        close(fd);
+        return 1;
+    }
+    printf("Sendte %zd bytes til OLED\n", n);
+
     printf("Forbundet til OLED\n");
     close(fd);
 }
